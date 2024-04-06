@@ -21,7 +21,7 @@ function AuthButton() {
 
 export default function NavMenu() {
     return (
-        <div className="text-right p-4 bg-blue-400">
+        <div className="text-right p-6 bg-blue-600">
             <AuthButton />
         </div>
     )

@@ -16,11 +16,13 @@ export default function Purchases(props: PurchaseProps) {
     const { purchases } = props;
     return (
         <>
-            <ul>
-                {
-                    purchases.map(purchase => <li key={purchase.id}>{purchase.name}</li>)
-                }
-            </ul>
+            <div className="container mx-auto text-center mb-60">
+                <ul>
+                    {
+                        purchases.map(purchase => <li key={purchase.id} className="text-black">{purchase.name}</li>)
+                    }
+                </ul>
+            </div>
         </>
     )
 }
