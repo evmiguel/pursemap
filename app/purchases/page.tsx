@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Purchases from "@/components/Purchases";
+import AddPurchase from "@/components/AddPurchase";
 
 async function getPurchases(email: string) {
     const purchases = prisma.purchase.findMany({
@@ -23,6 +24,9 @@ export default async function Page() {
     const purchases = await getPurchases(session?.user?.email as string);
 
     return (
-        <Purchases purchases={purchases} />
+        <>
+            <Purchases purchases={purchases} />
+            <AddPurchase email={session?.user?.email} />
+        </>
     )
 }
