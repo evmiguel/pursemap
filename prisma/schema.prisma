@@ -15,6 +15,7 @@ datasource db {
 
 model Purchase {
   id          BigInt @id @default(autoincrement())
+  date        DateTime
   name        String
   email       String
   cost        Float

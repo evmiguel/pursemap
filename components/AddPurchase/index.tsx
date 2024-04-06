@@ -18,11 +18,12 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
             name: formData.get('name'),
             cost: formData.get('cost'),
             category: formData.get('category'),
+            date: Date.now(),
             email: email
         }
 
         try {
-            await fetch('/api/add-purchase', { 
+            await fetch('/api/purchase', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
