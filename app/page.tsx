@@ -1,19 +1,12 @@
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth"
+import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const session = await getServerSession();
 
-  return (
-    <>
-      <main className="flex bg-white text-black min-h-screen flex-col items-center justify-between p-24">
-      {session?.user?.name ?
-        (
-            `Hello ${session?.user?.name}`
-        ) : (
-          `Please log in`
-        )
-      }
-      </main>
-    </>
-  );
+  if (session === null) {
+    redirect('/api/auth/signin');
+  }
+
+  redirect('/purchases');
 }
