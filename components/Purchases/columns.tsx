@@ -19,6 +19,7 @@ export const columns: ColumnDef<Purchase>[] = [
         
         accessorKey: "date",
         header: () => <div className="text-left">Date</div>,
+        footer: 'Total',
         cell: ({ row }) => {
           return <div className="text-left font-medium">{new Date(row.getValue('date')).toLocaleDateString()}</div>
         }
@@ -29,6 +30,10 @@ export const columns: ColumnDef<Purchase>[] = [
       cell: ({ row }) => {
         return <div className="text-left font-medium">{row.getValue('name')}</div>
       }
+    },
+    {
+        accessorKey: "category",
+        header: () => <div className="text-center">Category</div>,
     },
     {
         accessorKey: "cost",
@@ -53,11 +58,15 @@ export const columns: ColumnDef<Purchase>[] = [
             }).format(amount)
     
             return <div className="text-right font-medium">{formatted}</div>
-        }
-    },
-    {
-      accessorKey: "category",
-      header: () => <div className="text-center">Category</div>,
+        },
+        footer: ({ table }) => <div className="text-right">
+            {   new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(
+                table.getFilteredRowModel().rows.reduce((total, row) => total + parseFloat(row.getValue('cost')), 0))
+            }
+            </div>,
     },
     {
         id: "delete",
