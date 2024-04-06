@@ -24,9 +24,9 @@ export default async function Page() {
     const purchases = await getPurchases(session?.user?.email as string);
 
     return (
-        <>
+        <main className="bg-white h-screen">
             <Purchases purchases={purchases} />
             <AddPurchase email={session?.user?.email} />
-        </>
+        </main>
     )
 }
