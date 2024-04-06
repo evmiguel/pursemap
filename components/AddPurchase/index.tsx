@@ -39,10 +39,10 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
     return (
         <div className="container mx-auto text-center">
             <form ref={ref} action={async (formData) => { addPurchase(formData);  ref.current?.reset(); }}>
-                <input name="name" placeholder="Purchase Name" className='text-black' />
-                <input name="cost" placeholder="Purchase Cost" className='text-black' />
-                <input name="category" placeholder="Category (optional)" className='text-black' />
-                <button type="submit" className="text-white bg-orange-300 p-4 rounded-md">Add Purchase</button>
+                <input name="name" placeholder="Purchase Name" className='text-center text-black block lg:inline-block mx-auto' />
+                <input name="cost" placeholder="Purchase Cost" className='text-center text-black block lg:inline-block mx-auto' />
+                <input name="category" placeholder="Category (optional)" className='text-center text-black block lg:inline-block mx-auto' />
+                <button type="submit" className="text-white bg-orange-300 p-4 rounded-md mx-auto">Add Purchase</button>
             </form>
         </div>
     )
