@@ -21,7 +21,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} text-base text-white`}>
+      <body className={`${inter.className} text-base`}>
         <SessionProvider session={session}>
           <NavMenu />
           {children}

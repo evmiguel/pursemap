@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import DeletePurchase from "../DeletePurchase";
+import dayjs from 'dayjs';
 
 export type Purchase = {
     id: bigint,
@@ -21,7 +22,7 @@ export const columns: ColumnDef<Purchase>[] = [
         header: () => <div className="text-left">Date</div>,
         footer: 'Total',
         cell: ({ row }) => {
-          return <div className="text-left font-medium">{new Date(row.getValue('date')).toLocaleDateString()}</div>
+          return <div className="text-left font-medium">{dayjs(row.getValue('date')).format('MM/DD/YYYY')}</div>
         }
     },
     {

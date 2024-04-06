@@ -28,5 +28,5 @@ export async function DELETE(request: NextRequest) {
             id
         }
     })
-    return NextResponse.json({result    })
+    return NextResponse.json({result})
 }

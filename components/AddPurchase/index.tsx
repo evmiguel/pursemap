@@ -1,7 +1,8 @@
 'use client'
 
-import { useRouter } from "next/navigation"
-import { useRef } from 'react'
+import { useRouter } from "next/navigation";
+import { useRef } from 'react';
+import dayjs from 'dayjs';
 
 interface AddPurchaseProps {
     email: string | null | undefined
@@ -18,7 +19,7 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
             name: formData.get('name'),
             cost: formData.get('cost'),
             category: formData.get('category'),
-            date: Date.now(),
+            date: new Date(formData.get('date') as string).setHours(24),
             email: email
         }
 
@@ -39,6 +40,7 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
     return (
         <div className="container mx-auto text-center">
             <form ref={ref} action={async (formData) => { addPurchase(formData);  ref.current?.reset(); }}>
+                <input type="date" name="date" max={dayjs(new Date()).format('YYYY-MM-DD')} className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="name" placeholder="Purchase Name" className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="cost" placeholder="Purchase Cost" className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="category" placeholder="Category (optional)" className='text-center text-black block lg:inline-block mx-auto' />
