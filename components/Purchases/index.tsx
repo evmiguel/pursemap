@@ -10,7 +10,7 @@ export default function Purchases(props: PurchaseProps) {
     return (
         <>
             <div className="container mx-auto text-center mb-10 mt-10">
-                <DataTable columns={columns} data={purchases}  />
+                <DataTable columns={columns} data={purchases.sort((a, b) =>  new Date(b.date).getTime() - new Date(a.date).getTime())}  />
             </div>
         </>
     )

@@ -8,13 +8,13 @@ function AuthButton() {
     if (session) {
         return (
             <>
-                <button onClick={() => signOut()}>Sign Out</button>
+                <button onClick={() => signOut()} className="text-white">Sign Out</button>
             </>
         )
     }
     return (
         <>
-            <button onClick={() => signIn()}>Sign In</button>
+            <button onClick={() => signIn()} className="text-white">Sign In</button>
         </>
     ) 
 }
