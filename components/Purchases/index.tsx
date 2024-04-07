@@ -23,7 +23,8 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
             return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'day'));
         }
         case 'week': {
-            const purchasesByWeek = _.groupBy(purchases, (dt) => dayjs(dt.date).isoWeek());
+            const purchasesThisYear = purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'year'));
+            const purchasesByWeek = _.groupBy(purchasesThisYear, (dt) => dayjs(dt.date).isoWeek());
             const thisWeek = Math.max(...(Object.keys(purchasesByWeek).map(key => parseInt(key))));
             return purchasesByWeek[thisWeek.toString()];
         }
