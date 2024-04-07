@@ -26,7 +26,7 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
             const purchasesThisYear = purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'year'));
             const purchasesByWeek = _.groupBy(purchasesThisYear, (dt) => dayjs(dt.date).isoWeek());
             const thisWeek = Math.max(...(Object.keys(purchasesByWeek).map(key => parseInt(key))));
-            return purchasesByWeek[thisWeek.toString()];
+            return purchasesByWeek[thisWeek.toString()] || [];
         }
         case 'month': {
             return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'month'))
@@ -42,7 +42,7 @@ export default function Purchases(props: PurchaseProps) {
 
     const context = useContext(FilterContext);
         
-    const filteredPurchases = filterPurchases(purchases, context.purchaseFilter as string);
+    const filteredPurchases = filterPurchases(purchases, context.purchaseFilter);
 
     const sortedPurchases = filteredPurchases.sort((a, b) =>  new Date(b.date).getTime() - new Date(a.date).getTime());
     
