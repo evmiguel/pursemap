@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+// @ts-ignore
 BigInt.prototype.toJSON = function () {
     return this.toString();
 };
