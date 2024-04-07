@@ -8,6 +8,8 @@ type DeleteProps = {
     id: bigint
 }
 
+// @ts-ignore
+BigInt.prototype.toJSON = function() { return this.toString() }
 
 export default function DeletePurchase({ id }: DeleteProps) {
 
