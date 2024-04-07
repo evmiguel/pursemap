@@ -21,8 +21,11 @@ function AuthButton() {
 
 export default function NavMenu() {
     return (
-        <div className="text-right p-6 bg-blue-600">
-            <AuthButton />
-        </div>
+        <nav className="p-6 bg-blue-600">
+            <ul className="flex justify-between">
+                <li className="inline-block">PURSE MAP</li>
+                <li className="inline-block"><AuthButton /></li>
+            </ul>
+        </nav>
     )
 }

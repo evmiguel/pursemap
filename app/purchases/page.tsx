@@ -32,7 +32,7 @@ export default async function Page() {
                     <Purchases purchases={purchases} />
                     <AddPurchase email={session?.user?.email} />
                 </main>
-                <Sidebar className={"flex space-x-4 pr-10 justify-center w-screenm md:space-x-0 md:block md:w-50 md:col-span-1 md:mt-10 md:mr-10 md:text-right"} />
+                <Sidebar className={"flex space-x-4 pr-10 justify-center md:space-x-0 md:block md:w-50 md:col-span-1 md:mt-10 md:mr-10 md:text-right"} />
             </FilterProvider>
         </div>
     )
