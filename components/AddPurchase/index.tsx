@@ -15,11 +15,18 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
 
     async function addPurchase(formData: FormData) {
 
+        let formattedDate;
+        if (dayjs(formData.get('date') as string).isSame(Date.now(), 'day')){
+            formattedDate = new Date();
+        } else {
+            formattedDate = new Date(formData.get('date') as string).setHours(24)
+        }
+
         const data = {
             name: formData.get('name'),
             cost: formData.get('cost'),
             category: formData.get('category'),
-            date: new Date(formData.get('date') as string).setHours(24),
+            date: formattedDate,
             email: email
         }
 
@@ -37,10 +44,12 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
         }
     }
 
+    const today = dayjs(new Date()).format('YYYY-MM-DD');
+
     return (
         <div className="container mx-auto text-center">
             <form ref={ref} action={async (formData) => { addPurchase(formData);  ref.current?.reset(); }}>
-                <input type="date" name="date" max={dayjs(new Date()).format('YYYY-MM-DD')} className='text-center text-black block lg:inline-block mx-auto' />
+                <input type="date" name="date" defaultValue={today} max={today} className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="name" placeholder="Purchase Name" className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="cost" placeholder="Purchase Cost" className='text-center text-black block lg:inline-block mx-auto' />
                 <input name="category" placeholder="Category (optional)" className='text-center text-black block lg:inline-block mx-auto' />
