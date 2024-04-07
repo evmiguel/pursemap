@@ -5,7 +5,7 @@ import Purchases from "@/components/Purchases";
 import AddPurchase from "@/components/AddPurchase";
 import Sidebar from "@/components/Sidebar";
 import FilterProvider from "../filter-provider";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/options";
 
 async function getPurchases(email: string) {
     const user = await prisma.user.findFirst(
