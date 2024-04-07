@@ -27,6 +27,12 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
             const thisWeek = Math.max(...(Object.keys(purchasesByWeek).map(key => parseInt(key))));
             return purchasesByWeek[thisWeek.toString()];
         }
+        case 'month': {
+            return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'month'))
+        }
+        case 'year': {
+            return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'year'))
+        }
     }
 }
 
