@@ -4,7 +4,11 @@ import { FilterContext } from "@/app/filter-provider";
 import { Purchase, columns } from "./columns";
 import { DataTable } from "./data-table"
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek'
+import * as _ from "lodash";
 import { useContext } from "react";
+
+dayjs.extend(isoWeek);
 
 interface PurchaseProps {
     purchases: Array<Purchase>
@@ -17,6 +21,11 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
         }
         case 'today': {
             return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'day'));
+        }
+        case 'week': {
+            const purchasesByWeek = _.groupBy(purchases, (dt) => dayjs(dt.date).isoWeek());
+            const thisWeek = Math.max(...(Object.keys(purchasesByWeek).map(key => parseInt(key))));
+            return purchasesByWeek[thisWeek.toString()];
         }
     }
 }

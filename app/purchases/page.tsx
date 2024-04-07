@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Purchases from "@/components/Purchases";
 import AddPurchase from "@/components/AddPurchase";
 import Sidebar from "@/components/Sidebar";
-import FilterProvider, { FilterContext } from "../filter-provider";
+import FilterProvider from "../filter-provider";
 
 async function getPurchases(email: string) {
     const purchases = prisma.purchase.findMany({
