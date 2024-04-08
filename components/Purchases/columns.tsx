@@ -7,8 +7,8 @@ import DeletePurchase from "../DeletePurchase";
 import dayjs from 'dayjs';
 
 export type Purchase = {
-    id: bigint,
-    userId: string,
+    id?: bigint,
+    userId?: string,
     name: string,
     date: Date,
     cost: number,

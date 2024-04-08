@@ -1,25 +1,50 @@
 
 'use client'
-import exceljs from 'exceljs';
+import { useRouter } from "next/navigation";
+import WorkbookParserFactory, { ParserOutput } from "@/classes/WorkbookParser";
+import { Purchase } from "../Purchases/columns";
 
-export default function FilePicker() {
-  const readExcel = async (file: File) => {
-      function readFile(fileRes: any) {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.readAsArrayBuffer(fileRes)
-            reader.onload = () => {
-              resolve(reader.result)
-            }
-          })
+interface FilePickerProps {
+  email: string | null | undefined
+}
+
+export default function FilePicker({ email }: FilePickerProps) {
+
+  const router = useRouter();
+
+  async function savePurchases(purchases: Array<ParserOutput>) {
+
+    Promise.all(Object.values(purchases as Array<Purchase>).map((purchase: Purchase) => {
+      const data = {
+          name: purchase.name,
+          cost: purchase.cost,
+          category: purchase.category,
+          date: new Date(purchase.date as unknown as string).setHours(24),
+          email: email
       }
-      const buffer = await readFile(file);
-      const workbook = new exceljs.Workbook();
-      const fileData = await workbook.xlsx.load(buffer as Buffer);
-      const sheet = fileData.worksheets[0];
-      sheet.eachRow((row, rowIndex) => {
-        console.log(row.values, rowIndex)
-      })
+
+      try {
+        fetch('/api/purchase', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+          router.refresh();
+      } catch (error) {
+          console.error(error);
+      }
+    }));
+  }
+
+  const readExcel = async (file: File) => {
+      const parser = WorkbookParserFactory('AMEX', file);
+      if (!parser) {
+        return
+      }
+      const data = await parser.parse();
+      savePurchases(data);
     };
     return (
         <input
