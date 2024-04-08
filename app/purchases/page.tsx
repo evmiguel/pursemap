@@ -5,25 +5,31 @@ import Purchases from "@/components/Purchases";
 import AddPurchase from "@/components/AddPurchase";
 import Sidebar from "@/components/Sidebar";
 import FilterProvider from "../filter-provider";
+import { authOptions } from "../api/auth/[...nextauth]/options";
 
 async function getPurchases(email: string) {
-    const purchases = prisma.purchase.findMany({
-        where: {
-            email: email
+    const user = await prisma.user.findFirst(
+        {
+            where: {
+                email
+            },
+            include: {
+                purchases: true
+            }
         }
-    });
+    );
 
-    return purchases;
+    return user?.purchases;
 }
 
 export default async function Page() {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (session === null) {
         redirect('/api/auth/signin');
     }
 
-    const purchases = await getPurchases(session?.user?.email as string);
+    const purchases = await getPurchases(session?.user?.email as string) || [];
     
     return (
         <div className="h-screen bg-white md:grid md:grid-cols-5 md:grid-flow-dense     lg:grid-cols-7 xl:grid-cols-9">

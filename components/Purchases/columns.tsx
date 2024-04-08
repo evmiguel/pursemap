@@ -8,8 +8,8 @@ import dayjs from 'dayjs';
 
 export type Purchase = {
     id: bigint,
+    userId: string,
     name: string,
-    email: string,
     date: Date,
     cost: number,
     category: string | null

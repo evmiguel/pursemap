@@ -9,9 +9,14 @@ BigInt.prototype.toJSON = function () {
 export async function POST(request: NextRequest) {
     const res = await request.json();
     const { email, name, cost, category, date } = res;
+    const user = await prisma.user.findFirst({
+        where: {
+            email
+        }
+    }) || { id: '' };
     const result = await prisma.purchase.create({
         data: {
-            email,
+            userId: user?.id,
             name,
             date: new Date(date),
             cost: parseFloat(cost),
