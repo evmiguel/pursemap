@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import Purchases from "@/components/Purchases";
 import AddPurchase from "@/components/AddPurchase";
 import Sidebar from "@/components/Sidebar";
-import FilterProvider from "../filter-provider";
 import { authOptions } from "../api/auth/[...nextauth]/options";
+import FilePicker from "@/components/FilePicker";
 
 async function getPurchases(email: string) {
     const user = await prisma.user.findFirst(
@@ -37,6 +37,7 @@ export default async function Page() {
             <main className="mb-8 md:col-span-4 md:order-1 lg:col-span-6 xl:col-span-8">
                 <Purchases purchases={purchases} />
                 <AddPurchase />
+                <FilePicker />
             </main>
         </div>
     )
