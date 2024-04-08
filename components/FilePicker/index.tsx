@@ -4,11 +4,7 @@ import { useRouter } from "next/navigation";
 import WorkbookParserFactory, { ParserOutput } from "@/classes/WorkbookParser";
 import { Purchase } from "../Purchases/columns";
 
-interface FilePickerProps {
-  email: string | null | undefined
-}
-
-export default function FilePicker({ email }: FilePickerProps) {
+export default function FilePicker() {
 
   const router = useRouter();
 
@@ -19,8 +15,7 @@ export default function FilePicker({ email }: FilePickerProps) {
           name: purchase.name,
           cost: purchase.cost,
           category: purchase.category,
-          date: new Date(purchase.date as unknown as string).setHours(24),
-          email: email
+          date: new Date(purchase.date as unknown as string).setHours(24)
       }
 
       try {

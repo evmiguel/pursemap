@@ -37,7 +37,7 @@ export default async function Page() {
             <main className="mb-8 md:col-span-4 md:order-1 lg:col-span-6 xl:col-span-8">
                 <Purchases purchases={purchases} />
                 <AddPurchase />
-                <FilePicker email={session?.user?.email} />
+                <FilePicker />
             </main>
         </div>
     )
