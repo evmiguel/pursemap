@@ -31,6 +31,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({result});
 }
 
+export async function PUT(request: NextRequest) {
+    const res = await request.json();
+    const { id, name, category } = res;
+    const result = await prisma.purchase.update({
+        where: {
+            id
+        },
+        data: {
+            name,
+            category
+        }
+    })
+    return NextResponse.json({ result })
+}
+
 export async function DELETE(request: NextRequest) {
     const res = await request.json()
     const { id } = res;

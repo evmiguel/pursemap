@@ -21,12 +21,16 @@ import {
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[],
+    editComponentOpen: boolean,
+    handleEditComponent: (open: boolean) => void
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    editComponentOpen,
+    handleEditComponent
   }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -38,7 +42,11 @@ export function DataTable<TData, TValue>({
       getSortedRowModel: getSortedRowModel(),
         state: {
         sorting,
-    }
+    },
+      meta: {
+        editComponentOpen,
+        handleEditComponent
+      }
     })
    
     return (

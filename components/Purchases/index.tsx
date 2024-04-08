@@ -6,7 +6,7 @@ import { DataTable } from "./data-table"
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek'
 import * as _ from "lodash";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 dayjs.extend(isoWeek);
 
@@ -38,6 +38,8 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
 }
 
 export default function Purchases(props: PurchaseProps) {
+    const [editComponentOpen, setEditComponentOpen] = useState(false);
+
     const { purchases } = props;
 
     const context = useContext(FilterContext);
@@ -49,7 +51,7 @@ export default function Purchases(props: PurchaseProps) {
     return (
         <>
             <div className="container mx-auto text-center mb-10 mt-10">
-                <DataTable columns={columns} data={sortedPurchases}  />
+                <DataTable columns={columns} data={sortedPurchases} editComponentOpen={editComponentOpen} handleEditComponent={setEditComponentOpen}  />
             </div>
         </>
     )
