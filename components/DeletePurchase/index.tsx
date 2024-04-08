@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type DeleteProps = {
-    id: bigint
+    id: bigint | undefined
 }
 
 // @ts-ignore
@@ -35,7 +35,7 @@ export default function DeletePurchase({ id }: DeleteProps) {
     }
     
     return (
-        <Button className="bg-white text-red-400 hover:bg-white" onClick={async () => deletePurchase(id)}>
+        <Button className="bg-white text-red-400 hover:bg-white" onClick={async () => deletePurchase(id as bigint)}>
             <X />
         </Button>
     )

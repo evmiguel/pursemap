@@ -12,7 +12,7 @@ export default function FilePicker({ email }: FilePickerProps) {
 
   const router = useRouter();
 
-  async function savePurchases(purchases: Array<ParserOutput>) {
+  async function savePurchases(purchases: ParserOutput) {
 
     Promise.all(Object.values(purchases as Array<Purchase>).map((purchase: Purchase) => {
       const data = {
