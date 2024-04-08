@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import DeletePurchase from "../DeletePurchase"; 
 import { Button } from "@/components/ui/button"
 import dayjs from 'dayjs';
 import {
@@ -85,8 +84,6 @@ export const columns: ColumnDef<Purchase>[] = [
             const purchase = row.original;
 
             return (
-                <>
-                <EditPurchase purchase={purchase} open={(table.options.meta as any).editComponentOpen} openOnChange={(table.options.meta as any).handleEditComponent} />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -96,14 +93,18 @@ export const columns: ColumnDef<Purchase>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => (table.options.meta as any).handleEditComponent(!(table.options.meta as any).editComponentOpen)}>
+                        <DropdownMenuItem onClick={() => {
+                            (table.options.meta as any).setCurrentPurchase(purchase);
+                            (table.options.meta as any).handleEditComponent(!(table.options.meta as any).editComponentOpen);
+                        }}>
                             Edit Purchase
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
+                        <DropdownMenuItem onClick={async () => await (table.options.meta as any).deletePurchase(purchase.id)}>
+                            Delete Purchase
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                </>
             )
             
         }
