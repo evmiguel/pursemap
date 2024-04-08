@@ -1,5 +1,6 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
+import PlaidLink from "../PlaidLink";
 
 function AuthButton() {
     const { data: session } = useSession();
@@ -23,6 +24,7 @@ export default function NavMenu() {
         <nav className="p-6 bg-blue-600">
             <ul className="flex justify-between">
                 <li className="inline-block">PURSE MAP</li>
+                <li className="inline-block"><PlaidLink /></li>
                 <li className="inline-block"><AuthButton /></li>
             </ul>
         </nav>

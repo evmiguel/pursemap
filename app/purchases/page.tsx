@@ -6,6 +6,10 @@ import AddPurchase from "@/components/AddPurchase";
 import Sidebar from "@/components/Sidebar";
 import FilterProvider from "../filter-provider";
 import { authOptions } from "../api/auth/[...nextauth]/options";
+import { cookies } from 'next/headers';
+import { getIronSession } from 'iron-session';
+import { plaidClient, sessionOptions } from "@/lib/plaid";
+import { SessionData } from "../api/plaid/exchange-public-token/route";
 
 async function getPurchases(email: string) {
     const user = await prisma.user.findFirst(
@@ -20,6 +24,18 @@ async function getPurchases(email: string) {
     );
 
     return user?.purchases;
+}
+
+async function getBalances() {
+    const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+    const access_token = session.access_token;
+  
+    if (!access_token) {
+        return [];
+    }
+  
+    const response = await plaidClient.accountsBalanceGet({ access_token });
+    console.log(response.data)
 }
 
 export default async function Page() {
