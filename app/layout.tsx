@@ -5,6 +5,7 @@ import SessionProvider from "../components/SessionProvider";
 import "./globals.css";
 import NavMenu from "@/components/NavMenu";
 import { authOptions } from "./api/auth/[...nextauth]/options";
+import FilterProvider from "./filter-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,9 @@ export default async function RootLayout({
       <body className={`${inter.className} text-base`}>
         <SessionProvider session={session}>
           <NavMenu />
-          {children}
+          <FilterProvider>
+            {children}
+          </FilterProvider>
         </SessionProvider>
       </body>
     </html>
