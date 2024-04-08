@@ -4,11 +4,8 @@ import { useRouter } from "next/navigation";
 import { useRef } from 'react';
 import dayjs from 'dayjs';
 
-interface AddPurchaseProps {
-    email: string | null | undefined
-}
 
-export default function AddPurchase({ email }: AddPurchaseProps) {
+export default function AddPurchase() {
 
     const router = useRouter();
     const ref = useRef<HTMLFormElement>(null);
@@ -27,7 +24,6 @@ export default function AddPurchase({ email }: AddPurchaseProps) {
             cost: formData.get('cost'),
             category: formData.get('category'),
             date: formattedDate,
-            email: email
         }
 
         try {

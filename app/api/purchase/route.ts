@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/options";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -8,7 +10,10 @@ BigInt.prototype.toJSON = function () {
 
 export async function POST(request: NextRequest) {
     const res = await request.json();
-    const { email, name, cost, category, date } = res;
+    const { name, cost, category, date } = res;
+
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email;
     const user = await prisma.user.findFirst({
         where: {
             email
