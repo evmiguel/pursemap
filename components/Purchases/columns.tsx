@@ -14,8 +14,8 @@ import {
   } from "@/components/ui/dropdown-menu";
 
 export type Purchase = {
-    id: bigint,
-    userId: string,
+    id?: bigint,
+    userId?: string,
     name: string,
     date: Date,
     cost: number,
