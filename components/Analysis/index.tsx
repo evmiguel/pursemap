@@ -29,21 +29,6 @@ type DataItem = {
     value: number;
 };
 
-type DonutChartProps = {
-    width: number;
-    height: number;
-    data: DataItem[];
-};
-
-const colors = [
-    "#e0ac2b",
-    "#e85252",
-    "#6689c6",
-    "#9a6fb0",
-    "#a53253",
-    "#69b3a2",
-  ];
-
 const MARGIN_X = 150;
 const MARGIN_Y = 50;
 const INFLEXION_PADDING = 20; // space between donut and label inflexion point
@@ -58,6 +43,11 @@ const sumByKey = (arr: Array<any>, key: string, value: string) => {
     return res;
 }
 
+const generateColor = () => {
+    const hex = Math.floor(Math.random()*16777215).toString(16);
+    return `#${hex}`
+}
+
 export default function Analysis({ purchases }: AnalysisProps) {
     const context = useContext(FilterContext);
 
@@ -70,6 +60,13 @@ export default function Analysis({ purchases }: AnalysisProps) {
     }), 'name', 'value');
 
 
+    const categoriesChartDataWithColor = categoriesChartData.map(category => {
+        return {
+            ...category,
+            color: generateColor()
+        }
+    })
+
     const width = 500;
     const height = 500;
     const radius = Math.min(width - 2 * MARGIN_X, height - 2 * MARGIN_Y) / 2;
@@ -77,8 +74,8 @@ export default function Analysis({ purchases }: AnalysisProps) {
 
     const pie = useMemo(() => {
         const pieGenerator = d3.pie<any, any>().value((d) => d.value);
-        return pieGenerator(categoriesChartData);
-    }, [categoriesChartData]);
+        return pieGenerator(categoriesChartDataWithColor);
+    }, [categoriesChartDataWithColor]);
 
     const arcGenerator = d3.arc();
 
@@ -109,7 +106,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
     
         return (
           <g key={i}>
-            <path d={slicePath as string} fill={colors[i]} />
+            <path d={slicePath as string} fill={grp.data.color} />
             <circle cx={centroid[0]} cy={centroid[1]} r={2} />
             <line
               x1={centroid[0]}
