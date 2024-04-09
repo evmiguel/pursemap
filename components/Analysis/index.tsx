@@ -53,7 +53,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
 
     const filteredPurchases = filterPurchases(purchases, context.purchaseFilter);
 
-    const itemsBought = filteredPurchases.filter((value, index, self) => index === self.findIndex((p) => p.name === value.name));
+    const itemsBought = sumByKey(filteredPurchases, 'name', 'cost').sort((a, b) => b.cost - a.cost);
 
     const categoriesChartData = sumByKey(filteredPurchases.map(purchase => { 
         return { name: purchase.category, value: 1}
@@ -154,7 +154,10 @@ export default function Analysis({ purchases }: AnalysisProps) {
                     <TabsContent value="items">
                         <ul>
                             {itemsBought.map(purchase => (
-                                <li key={purchase.id}>{purchase.name}</li>
+                                <li className="flex justify-between" key={purchase.name}><span className="inline-block">{purchase.name}</span> <span className="inline-block">{new Intl.NumberFormat("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                              }).format(purchase.cost)}</span></li>
                             ))}
                         </ul>
                     </TabsContent>
