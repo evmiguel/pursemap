@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import WorkbookParserFactory, { ParserOutput } from "@/classes/WorkbookParser";
 import { Purchase } from "../Purchases/columns";
 
-export default function FilePicker() {
+type FilePickerProps = {
+  className: string
+}
+
+export default function FilePicker({ className }: FilePickerProps) {
 
   const router = useRouter();
 
@@ -42,6 +46,7 @@ export default function FilePicker() {
       savePurchases(data);
     };
     return (
+      <div className={className}>
         <input
           placeholder="fileInput"
           type="file"
@@ -52,5 +57,6 @@ export default function FilePicker() {
           }}
           accept=".xlsx,.xls,.csv"
         />
+      </div>
     )
 }
