@@ -19,13 +19,10 @@ interface PurchaseProps {
     purchases: Array<Purchase>
 }
 
-const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
+export const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
     switch (filter) {
         default: {
             return purchases;
-        }
-        case 'today': {
-            return purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'day'));
         }
         case 'week': {
             const purchasesThisYear = purchases.filter((purchase) => dayjs(purchase.date).isSame(Date.now(), 'year'));

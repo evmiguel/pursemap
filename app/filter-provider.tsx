@@ -18,7 +18,7 @@ export default function FilterProvider({
     });
 
     const [filter, setFilter] = useState({
-        purchaseFilter: 'today',
+        purchaseFilter: 'week',
         setPurchaseFilter
     });
 

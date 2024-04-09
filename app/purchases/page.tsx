@@ -32,7 +32,7 @@ export default async function Page() {
     
     return (
         <div className="h-screen bg-white md:grid md:grid-cols-5 md:grid-flow-dense lg:grid-cols-7 xl:grid-cols-9">
-            <Sidebar className={"flex space-x-4 pt-10 justify-center md:order-2 md:space-x-0 md:block md:w-50 md:col-span-1 md:mt-10 md:mr-10 md:text-right"} />
+            <Sidebar purchases={purchases} className={"flex space-x-4 pt-10 justify-center md:order-2 md:space-x-0 md:block md:w-50 md:col-span-1 md:mt-10 md:mr-10 md:text-right"} />
             <main className="mb-8 md:col-span-4 md:order-1 lg:col-span-6 xl:col-span-8">
                 <Purchases purchases={purchases} />
                 <FilePicker className={'flex justify-center'} />
