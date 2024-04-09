@@ -24,15 +24,6 @@ type AnalysisProps = {
     purchases: Array<Purchase>
 }
 
-type DataItem = {
-    name: string;
-    value: number;
-};
-
-const MARGIN_X = 150;
-const MARGIN_Y = 50;
-const INFLEXION_PADDING = 20; // space between donut and label inflexion point
-
 const sumByKey = (arr: Array<any>, key: string, value: string) => {
     const map = new Map();
     for(const obj of arr) {
@@ -43,10 +34,8 @@ const sumByKey = (arr: Array<any>, key: string, value: string) => {
     return res;
 }
 
-const generateColor = () => {
-    const hex = Math.floor(Math.random()*16777215).toString(16);
-    return `#${hex}`
-}
+const MARGIN = { top: 30, right: 30, bottom: 30, left: 30 };
+const BAR_PADDING = 0.3;
 
 export default function Analysis({ purchases }: AnalysisProps) {
     const context = useContext(FilterContext);
@@ -59,84 +48,64 @@ export default function Analysis({ purchases }: AnalysisProps) {
         return { name: purchase.category, value: 1}
     }), 'name', 'value');
 
+    // bounds = area inside the graph axis = calculated by substracting the margins
+    const width = 700;
+    const height = 700;
+    const boundsWidth = width - MARGIN.right - MARGIN.left;
+    const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
-    const categoriesChartDataWithColor = categoriesChartData.map(category => {
-        return {
-            ...category,
-            color: generateColor()
-        }
-    })
-
-    const width = 500;
-    const height = 500;
-    const radius = Math.min(width - 2 * MARGIN_X, height - 2 * MARGIN_Y) / 2;
-    const innerRadius = radius / 2;
-
-    const pie = useMemo(() => {
-        const pieGenerator = d3.pie<any, any>().value((d) => d.value);
-        return pieGenerator(categoriesChartDataWithColor);
-    }, [categoriesChartDataWithColor]);
-
-    const arcGenerator = d3.arc();
-
-    const shapes = pie.map((grp, i) => {
-        // First arc is for the donut
-        const sliceInfo = {
-          innerRadius,
-          outerRadius: radius,
-          startAngle: grp.startAngle,
-          endAngle: grp.endAngle,
-        };
-        const centroid = arcGenerator.centroid(sliceInfo);
-        const slicePath = arcGenerator(sliceInfo);
+    // Y axis is for groups since the barplot is horizontal
+    const groups = categoriesChartData.sort((a, b) => b.value - a.value).map((d) => d.name);
     
-        // Second arc is for the legend inflexion point
-        const inflexionInfo = {
-          innerRadius: radius + INFLEXION_PADDING,
-          outerRadius: radius + INFLEXION_PADDING,
-          startAngle: grp.startAngle,
-          endAngle: grp.endAngle,
-        };
-        const inflexionPoint = arcGenerator.centroid(inflexionInfo);
-    
-        const isRightLabel = inflexionPoint[0] > 0;
-        const labelPosX = inflexionPoint[0] + 50 * (isRightLabel ? 1 : -1);
-        const textAnchor = isRightLabel ? "start" : "end";
-        const label = grp.data.name;
-    
-        return (
-          <g key={i}>
-            <path d={slicePath as string} fill={grp.data.color} />
-            <circle cx={centroid[0]} cy={centroid[1]} r={2} />
-            <line
-              x1={centroid[0]}
-              y1={centroid[1]}
-              x2={inflexionPoint[0]}
-              y2={inflexionPoint[1]}
-              stroke={"black"}
-              fill={"black"}
-            />
-            <line
-              x1={inflexionPoint[0]}
-              y1={inflexionPoint[1]}
-              x2={labelPosX}
-              y2={inflexionPoint[1]}
-              stroke={"black"}
-              fill={"black"}
-            />
-            <text
-              x={labelPosX + (isRightLabel ? 2 : -2)}
-              y={inflexionPoint[1]}
-              textAnchor={textAnchor}
-              dominantBaseline="middle"
-              fontSize={14}
-            >
-              {label}
-            </text>
-          </g>
-        );
-      });
+    const xScale = useMemo(() => {
+      const [min, max] = d3.extent(categoriesChartData.map((d) => d.value));
+      return d3
+        .scaleLinear()
+        .domain([0, max || 10])
+        .range([0, boundsWidth]);
+    }, [categoriesChartData, width]);
 
+    const yScale = useMemo(() => {
+      return d3
+        .scaleBand()
+        .domain(groups)
+        .range([0, boundsHeight])
+        .padding(BAR_PADDING);
+    }, [categoriesChartData, height]);
+    // Build the shapes
+  const allShapes = categoriesChartData.map((d, i) => {
+    const y = yScale(d.name);
+    if (y === undefined) {
+      return null;
+    }
+
+    return (
+      <g key={i}>
+        <rect
+          x={xScale(0)}
+          y={yScale(d.name)}
+          width={xScale(d.value)}
+          height={yScale.bandwidth()}
+          opacity={0.7}
+          stroke="#3399ff"
+          fill="#3399ff"
+          fillOpacity={0.3}
+          strokeWidth={1}
+          rx={1}
+        />
+        <text
+          x={xScale(0) + 7}
+          y={y + yScale.bandwidth() / 2}
+          textAnchor="start"
+          alignmentBaseline="central"
+          fontSize={12}
+        >
+          {d.name.replace(' ', '\n')}
+        </text>
+      </g>
+    );
+  });
+ 
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -164,11 +133,17 @@ export default function Analysis({ purchases }: AnalysisProps) {
                         </div>
                     </TabsContent>
                     <TabsContent value="categories">
-                        <div className="text-center">
-                            <svg width={width} height={height} style={{ display: "inline-block" }}>
-                                <g transform={`translate(${width / 2}, ${height / 2})`}>{shapes}</g>
-                            </svg>
-                        </div>
+                    <div className="text-center max-h-96">
+                      <svg width={width} height={height}>
+                        <g
+                          width={boundsWidth}
+                          height={boundsHeight}
+                          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
+                        >
+                          {allShapes}
+                        </g>
+                      </svg>
+                    </div>
                     </TabsContent>
                 </Tabs>
             </DialogContent>
