@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 type FilePickerProps = {
   className: string
@@ -70,7 +71,7 @@ export default function FilePicker({ className }: FilePickerProps) {
     };
     return (
       <div className={className}>
-        <input
+        <Input
           placeholder="fileInput"
           type="file"
           multiple={true}
@@ -79,6 +80,7 @@ export default function FilePicker({ className }: FilePickerProps) {
             setFile(file);
           }}
           accept=".xlsx,.xls,.csv"
+          className="w-1/4"
         />
         <Select onValueChange={setBank}>
           <SelectTrigger className="w-[180px]">
@@ -86,8 +88,9 @@ export default function FilePicker({ className }: FilePickerProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="AMEX">American Express</SelectItem>
+              <SelectItem value="AMEX">AMEX</SelectItem>
               <SelectItem value="CHASE">Chase</SelectItem>
+              <SelectItem value="GEMINI">Gemini</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

@@ -5,7 +5,8 @@ import * as d3 from "d3";
 
 enum Banks {
     AMEX = 'AMEX',
-    CHASE = 'CHASE'
+    CHASE = 'CHASE',
+    GEMINI = 'GEMINI'
 }
 
 export type ParserOutput = {
@@ -22,6 +23,23 @@ abstract class WorkbookParser {
     abstract readFile(file: File): Promise<any>
 
     abstract parse(): Promise<ParserOutput>
+}
+
+abstract class CsvWorkbookParser extends WorkbookParser {
+    constructor(file: File) {
+        super(file);
+    }
+
+    override readFile(file: File): Promise<any> {
+        return new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.readAsText(file)
+            reader.onload = () => {
+              resolve(reader.result)
+            }
+        })
+    }
+
 }
 
 class AmexWorkbookParser extends WorkbookParser {
@@ -51,6 +69,10 @@ class AmexWorkbookParser extends WorkbookParser {
             }
 
             const values = row.values as Array<any>;
+
+            if (values[2].includes('THANK YOU')) {
+                return;
+            }
             
             data[rowIndex] = {
                date: values[1],
@@ -63,19 +85,9 @@ class AmexWorkbookParser extends WorkbookParser {
     }
 }
 
-class ChaseWorkbookParser extends WorkbookParser {
+class ChaseWorkbookParser extends CsvWorkbookParser {
     constructor(file: File) {
         super(file);
-    }
-
-    override readFile(file: File): Promise<any> {
-        return new Promise((resolve) => {
-            const reader = new FileReader()
-            reader.readAsText(file)
-            reader.onload = () => {
-              resolve(reader.result)
-            }
-        })
     }
 
     async parse() {
@@ -83,6 +95,9 @@ class ChaseWorkbookParser extends WorkbookParser {
         const csvData = d3.csvParse(text);
         const data:ParserOutput = {}
         csvData.forEach((row, index) => {
+            if (row['Type'] === 'Payment') {
+                return;
+            }
             data[index] = {
                 date: new Date(row['Transaction Date']),
                 name: row['Description'],
@@ -91,8 +106,31 @@ class ChaseWorkbookParser extends WorkbookParser {
             }
         });
         return data;
+    } 
+}
+
+class GeminiWorkbookParser extends CsvWorkbookParser {
+    constructor(file: File) {
+        super(file);
     }
-    
+
+    async parse() {
+        const text = await this.readFile(this.file)
+        const csvData = d3.csvParse(text);
+        const data:ParserOutput = {}
+        csvData.forEach((row, index) => {
+            if (row['Transaction Type'] === 'payment_transaction') {
+                return;
+            }
+            data[index] = {
+                date: new Date(row['Transaction Post Date']),
+                name: row['Description of Transaction'],
+                cost: parseFloat(row['Amount']),
+                category: ''
+            }
+        });
+        return data;
+    } 
 }
 
 export default function WorkbookParserFactory(bank: string, file: File) {
@@ -100,6 +138,8 @@ export default function WorkbookParserFactory(bank: string, file: File) {
         return new AmexWorkbookParser(file);
     } else if (bank === Banks.CHASE) {
         return new ChaseWorkbookParser(file);
+    } else if (bank === Banks.GEMINI) {
+        return new GeminiWorkbookParser(file);
     }
     return null;
 }
