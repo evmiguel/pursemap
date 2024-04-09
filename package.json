@@ -21,6 +21,7 @@
     "@tanstack/react-table": "^8.15.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "d3": "^7.9.0",
     "dayjs": "^1.11.10",
     "exceljs": "^4.4.0",
     "lodash": "^4.17.21",
@@ -33,6 +34,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/lodash": "^4.17.0",
     "@types/node": "^20",
     "@types/react": "^18",

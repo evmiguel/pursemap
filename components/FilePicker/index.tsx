@@ -38,7 +38,7 @@ export default function FilePicker({ className }: FilePickerProps) {
   }
 
   const readExcel = async (file: File) => {
-      const parser = WorkbookParserFactory('AMEX', file);
+      const parser = WorkbookParserFactory('CHASE', file);
       if (!parser) {
         return
       }
