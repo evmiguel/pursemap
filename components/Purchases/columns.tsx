@@ -11,9 +11,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-import EditPurchase from "../EditPurchase";
-import { Component } from "react";
+  } from "@/components/ui/dropdown-menu";
 
 export type Purchase = {
     id: bigint,
@@ -21,7 +19,7 @@ export type Purchase = {
     name: string,
     date: Date,
     cost: number,
-    category: string | undefined
+    category: string | null
 }
 
 export const columns: ColumnDef<Purchase>[] = [

@@ -67,7 +67,7 @@ export default function EditPurchase({ purchase, open, openOnChange }: EditPurch
                             <Label htmlFor="category" className="text-right">
                             Category
                             </Label>
-                            <Input id="category" name="category" defaultValue={purchase.category} className="col-span-3" />
+                            <Input id="category" name="category" defaultValue={purchase.category as string} className="col-span-3" />
                         </div>
                     </div>
                 <DialogFooter>
