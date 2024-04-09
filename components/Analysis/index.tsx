@@ -142,7 +142,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
             <DialogTrigger asChild>
                 <Button className="Analyze">Analyze</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[1000px]">
+            <DialogContent className="sm:max-w-[1000px] overflow-y-scroll">
                 <DialogHeader>
                     <DialogTitle>This is what you&apos;ve accumulated {context.purchaseFilter === 'all' ? 'for all time' : `this ${context.purchaseFilter}`}</DialogTitle>
                 </DialogHeader>
@@ -151,15 +151,17 @@ export default function Analysis({ purchases }: AnalysisProps) {
                         <TabsTrigger value="items">Items</TabsTrigger>
                         <TabsTrigger value="categories">Categories</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="items">
-                        <ul>
-                            {itemsBought.map(purchase => (
-                                <li className="flex justify-between" key={purchase.name}><span className="inline-block">{purchase.name}</span> <span className="inline-block">{new Intl.NumberFormat("en-US", {
-                                  style: "currency",
-                                  currency: "USD",
-                              }).format(purchase.cost)}</span></li>
-                            ))}
-                        </ul>
+                    <TabsContent value="items" className="overflow-scroll max-h-96">
+                        <div>
+                          <ul>
+                              {itemsBought.map(purchase => (
+                                  <li className="flex justify-between" key={purchase.name}><span className="inline-block">{purchase.name}</span> <span className="inline-block">{new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                }).format(purchase.cost)}</span></li>
+                              ))}
+                          </ul>
+                        </div>
                     </TabsContent>
                     <TabsContent value="categories">
                         <div className="text-center">
