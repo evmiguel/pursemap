@@ -1,10 +1,17 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
-import DeletePurchase from "../DeletePurchase";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button"
 import dayjs from 'dayjs';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu";
 
 export type Purchase = {
     id: bigint,
@@ -70,11 +77,34 @@ export const columns: ColumnDef<Purchase>[] = [
             </div>,
     },
     {
-        id: "delete",
-        cell: ({ row }) => {
+        id: "row_actions",
+        cell: ({ table, row }) => {
             const purchase = row.original;
 
-            return <DeletePurchase id={purchase.id} />
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => {
+                            (table.options.meta as any).setCurrentPurchase(purchase);
+                            (table.options.meta as any).handleEditComponent(!(table.options.meta as any).editComponentOpen);
+                        }}>
+                            Edit Purchase
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={async () => await (table.options.meta as any).deletePurchase(purchase.id)}>
+                            Delete Purchase
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
+            
         }
     }
 ]

@@ -6,9 +6,14 @@ import { DataTable } from "./data-table"
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek'
 import * as _ from "lodash";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+import EditPurchase from "../EditPurchase";
 
 dayjs.extend(isoWeek);
+
+// @ts-ignore
+BigInt.prototype.toJSON = function() { return this.toString() }
 
 interface PurchaseProps {
     purchases: Array<Purchase>
@@ -38,6 +43,31 @@ const filterPurchases = (purchases: Array<Purchase>, filter: string) => {
 }
 
 export default function Purchases(props: PurchaseProps) {
+
+    const router = useRouter();
+
+    async function deletePurchase(id: bigint) {
+        const data = {
+            id
+        }
+    
+        try {
+            await fetch('/api/purchase', { 
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const [editComponentOpen, setEditComponentOpen] = useState(false);
+    const [currentPurchase, setCurrentPurchase] = useState({} as Purchase);
+
     const { purchases } = props;
 
     const context = useContext(FilterContext);
@@ -49,7 +79,15 @@ export default function Purchases(props: PurchaseProps) {
     return (
         <>
             <div className="container mx-auto text-center mb-10 mt-10">
-                <DataTable columns={columns} data={sortedPurchases}  />
+                <DataTable 
+                    columns={columns} 
+                    data={sortedPurchases} 
+                    editComponentOpen={editComponentOpen} 
+                    handleEditComponent={setEditComponentOpen}
+                    deletePurchase={deletePurchase}
+                    setCurrentPurchase={setCurrentPurchase}
+                />
+                <EditPurchase purchase={currentPurchase} open={editComponentOpen} openOnChange={setEditComponentOpen} />
             </div>
         </>
     )
