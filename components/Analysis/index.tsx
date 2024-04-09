@@ -45,7 +45,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
     const itemsBought = sumByKey(filteredPurchases, 'name', 'cost').sort((a, b) => b.cost - a.cost);
 
     const categoriesChartData = sumByKey(filteredPurchases.map(purchase => { 
-        return { name: purchase.category, value: 1}
+        return { name: purchase.category, value: purchase.cost}
     }), 'name', 'value');
 
     // bounds = area inside the graph axis = calculated by substracting the margins
@@ -100,7 +100,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
           alignmentBaseline="central"
           fontSize={12}
         >
-          {d.name.replace(' ', '\n')}
+          {d.name}
         </text>
       </g>
     );
