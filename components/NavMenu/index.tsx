@@ -22,7 +22,7 @@ export default function NavMenu() {
     return (
         <nav className="p-6 bg-blue-600">
             <ul className="flex justify-between">
-                <li className="inline-block">PURSE MAP</li>
+                <li className="inline-block font-bold text-lg text-white">PURSE MAP</li>
                 <li className="inline-block"><AuthButton /></li>
             </ul>
         </nav>
