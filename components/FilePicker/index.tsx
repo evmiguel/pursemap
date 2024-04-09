@@ -3,6 +3,17 @@
 import { useRouter } from "next/navigation";
 import WorkbookParserFactory, { ParserOutput } from "@/classes/WorkbookParser";
 import { Purchase } from "../Purchases/columns";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useState } from "react";
+import { Button } from "../ui/button";
 
 type FilePickerProps = {
   className: string
@@ -11,6 +22,9 @@ type FilePickerProps = {
 export default function FilePicker({ className }: FilePickerProps) {
 
   const router = useRouter();
+
+  const [bank, setBank] = useState('');
+  const [file, setFile] = useState();
 
   async function savePurchases(purchases: ParserOutput) {
 
@@ -38,9 +52,18 @@ export default function FilePicker({ className }: FilePickerProps) {
   }
 
   const readExcel = async (file: File) => {
-      const parser = WorkbookParserFactory('CHASE', file);
+      const parser = WorkbookParserFactory(bank, file);
+      if (!file) {
+        alert('Please select a file')
+        return;
+      }
+
+      if (!bank) {
+        alert('Please select a bank')
+        return;
+      }
       if (!parser) {
-        return
+        return;
       }
       const data = await parser.parse();
       savePurchases(data);
@@ -53,10 +76,22 @@ export default function FilePicker({ className }: FilePickerProps) {
           multiple={true}
           onChange={async (e: any) => {
             const file = e.target.files[0];
-            await readExcel(file);
+            setFile(file);
           }}
           accept=".xlsx,.xls,.csv"
         />
+        <Select onValueChange={setBank}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a bank" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="AMEX">American Express</SelectItem>
+              <SelectItem value="CHASE">Chase</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Button onClick={(e) => { e.preventDefault(); readExcel(file as unknown as File);}} className="ml-4">Upload File</Button>
       </div>
     )
 }
