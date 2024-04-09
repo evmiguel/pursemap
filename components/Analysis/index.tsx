@@ -109,7 +109,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
     
         return (
           <g key={i}>
-            <path d={slicePath} fill={colors[i]} />
+            <path d={slicePath as string} fill={colors[i]} />
             <circle cx={centroid[0]} cy={centroid[1]} r={2} />
             <line
               x1={centroid[0]}
