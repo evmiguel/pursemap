@@ -22,7 +22,7 @@ abstract class WorkbookParser {
 
     abstract readFile(file: File): Promise<any>
 
-    abstract parse(): Promise<Array<any>>
+    abstract parse(): Promise<Array<PurchaseOutput>>
 }
 
 abstract class CsvWorkbookParser extends WorkbookParser {
@@ -66,30 +66,26 @@ class AmexWorkbookParser extends CsvWorkbookParser {
                 date: new Date(row['Date']).setHours(12),
                 cost: parseFloat(row['Amount'])
             }
+      
+            const response = await fetch('/api/purchase/duplicate', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(costData)
+            });
 
-            try {
-                const response = await fetch('/api/purchase/duplicate', { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(costData)
-                });
-    
-                const responseBody = await response.json();
-    
-                const duplicates = responseBody.result;
-    
-                return {
-                    date: new Date(row['Date']),
-                    name: row['Description'],
-                    cost: parseFloat(row['Amount']),
-                    category: row['Category'],
-                    duplicates,
-                    payment: false
-                }
-            } catch (error) {
-                console.error(error)
+            const responseBody = await response.json();
+
+            const duplicates = responseBody.result;
+
+            return {
+                date: new Date(row['Date']),
+                name: row['Description'],
+                cost: parseFloat(row['Amount']),
+                category: row['Category'],
+                duplicates,
+                payment: false
             }
         }));
     } 
@@ -118,30 +114,26 @@ class ChaseWorkbookParser extends CsvWorkbookParser {
                 date: new Date(row['Transaction Date']).setHours(12),
                 cost: parseFloat(row['Amount']) * -1
             }
+      
+            const response = await fetch('/api/purchase/duplicate', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(costData)
+            });
 
-            try {
-                const response = await fetch('/api/purchase/duplicate', { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(costData)
-                });
-    
-                const responseBody = await response.json();
-    
-                const duplicates = responseBody.result;
-    
-                return {
-                    date: new Date(row['Transaction Date']),
-                    name: row['Description'],
-                    cost: parseFloat(row['Amount']) * -1,
-                    category: row['Category'],
-                    duplicates,
-                    payment: false
-                }
-            } catch (error) {
-                console.error(error)
+            const responseBody = await response.json();
+
+            const duplicates = responseBody.result;
+
+            return {
+                date: new Date(row['Transaction Date']),
+                name: row['Description'],
+                cost: parseFloat(row['Amount']) * -1,
+                category: row['Category'],
+                duplicates,
+                payment: false
             }
         }));
     } 
@@ -171,30 +163,26 @@ class GeminiWorkbookParser extends CsvWorkbookParser {
                     date: new Date(row['Transaction Post Date']).setHours(12),
                     cost: parseFloat(row['Amount'])
                 }
-
-                try {
-                    const response = await fetch('/api/purchase/duplicate', { 
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(costData)
-                    });
-        
-                    const responseBody = await response.json();
-        
-                    const duplicates = responseBody.result;
+          
+                const response = await fetch('/api/purchase/duplicate', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(costData)
+                });
     
-                    return {
-                        date: new Date(row['Transaction Post Date']),
-                        name: row['Description of Transaction'],
-                        cost: parseFloat(row['Amount']),
-                        category: '',
-                        duplicates,
-                        payment: false
-                    }
-                } catch (error) {
-                    console.error(error)
+                const responseBody = await response.json();
+    
+                const duplicates = responseBody.result;
+
+                return {
+                    date: new Date(row['Transaction Post Date']),
+                    name: row['Description of Transaction'],
+                    cost: parseFloat(row['Amount']),
+                    category: '',
+                    duplicates,
+                    payment: false
                 }
             })
         );
