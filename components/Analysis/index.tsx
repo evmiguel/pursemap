@@ -90,7 +90,7 @@ export default function Analysis({ purchases }: AnalysisProps) {
                                     <span className="inline-block">{formatCurrency(cost)}</span>
                                     </li>
                                 })).sort((a: any, b: any) => { 
-                                  return parseFloat(b.props.children[1].props.children.slice(1)) - parseFloat(a.props.children[1].props.children.slice(1))
+                                  return parseFloat(b.props.children[1].props.children.slice(1).replace(',','')) - parseFloat(a.props.children[1].props.children.slice(1).replace(',',''))
                                 })
                               }
                               <li className="flex justify-between border-t-2" key="total"><span className="inline-block font-bold">Total</span><span className="inline-block font-bold">
