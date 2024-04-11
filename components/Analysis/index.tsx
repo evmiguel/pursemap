@@ -19,6 +19,7 @@ import { FilterContext } from "@/app/filter-provider";
 import { filterPurchases } from "../Purchases";
 import { Purchase } from "../Purchases/columns";
 import * as d3 from 'd3';
+import { formatCurrency } from "@/util";
 
 type AnalysisProps = {
     purchases: Array<Purchase>
@@ -124,11 +125,13 @@ export default function Analysis({ purchases }: AnalysisProps) {
                         <div>
                           <ul>
                               {itemsBought.map(purchase => (
-                                  <li className="flex justify-between" key={purchase.name}><span className="inline-block">{purchase.name}</span> <span className="inline-block">{new Intl.NumberFormat("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                }).format(purchase.cost)}</span></li>
+                                  <li className="flex justify-between" key={purchase.name}><span className="inline-block">{purchase.name}</span> <span className="inline-block">{formatCurrency(purchase.cost)}</span></li>
                               ))}
+                              <li className="flex justify-between border-t-2" key="total"><span className="inline-block font-bold">Total</span><span className="inline-block font-bold">
+                                {
+                                  formatCurrency(itemsBought.reduce((a, b) => { return b.cost + a},0))
+                                }
+                                </span></li>
                           </ul>
                         </div>
                     </TabsContent>
