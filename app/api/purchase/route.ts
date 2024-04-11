@@ -6,7 +6,7 @@ import { authOptions } from "../auth/[...nextauth]/options";
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
     return this.toString();
-};
+}
 
 export async function POST(request: NextRequest) {
     const res = await request.json();

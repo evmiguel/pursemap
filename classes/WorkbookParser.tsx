@@ -1,6 +1,5 @@
 
 import { Purchase } from '@/components/Purchases/columns';
-import exceljs from 'exceljs';
 import * as d3 from "d3";
 
 enum Banks {
@@ -9,8 +8,9 @@ enum Banks {
     GEMINI = 'GEMINI'
 }
 
-export type ParserOutput = {
-    [index: number]: Purchase
+export interface PurchaseOutput extends Purchase {
+    duplicates?: Array<any>
+    payment?: boolean
 }
 
 abstract class WorkbookParser {
@@ -22,7 +22,7 @@ abstract class WorkbookParser {
 
     abstract readFile(file: File): Promise<any>
 
-    abstract parse(): Promise<ParserOutput>
+    abstract parse(): Promise<Array<PurchaseOutput>>
 }
 
 abstract class CsvWorkbookParser extends WorkbookParser {
@@ -42,47 +42,53 @@ abstract class CsvWorkbookParser extends WorkbookParser {
 
 }
 
-class AmexWorkbookParser extends WorkbookParser {
+class AmexWorkbookParser extends CsvWorkbookParser {
     constructor(file: File) {
         super(file);
     }
 
-    override readFile(fileRes: any) {
-        return new Promise((resolve) => {
-          const reader = new FileReader()
-          reader.readAsArrayBuffer(fileRes)
-          reader.onload = () => {
-            resolve(reader.result)
-          }
-        });
-    }
-
     async parse() {
-        const workbook = new exceljs.Workbook();
-        const buffer = await this.readFile(this.file);
-        const fileData = await workbook.xlsx.load(buffer as Buffer);
-        const sheet = fileData.worksheets[0];
-        const data:ParserOutput = {};
-        sheet.eachRow((row, rowIndex) => {
-            if ([1, 2, 3, 4, 5, 6, 7].includes(rowIndex)) {
-                return;
+        const text = await this.readFile(this.file)
+        const csvData = d3.csvParse(text);
+        console.log(csvData)
+        return Promise.all(csvData.map(async (row) => {
+            if (row['Description'].includes('THANK YOU')) {
+                return {
+                    date: new Date(row['Date']),
+                    name: row['Description'],
+                    cost: parseFloat(row['Amount']),
+                    category: row['Category'],
+                    payment: true
+                };
             }
 
-            const values = row.values as Array<any>;
-
-            if (values[2].includes('THANK YOU')) {
-                return;
+            const costData = {
+                date: new Date(row['Date']).setHours(12),
+                cost: parseFloat(row['Amount'])
             }
-            
-            data[rowIndex] = {
-               date: values[1],
-               name: values[2],
-               cost: values[3],
-               category: values[11],
-            };
-        });
-        return data;
-    }
+      
+            const response = await fetch('/api/purchase/duplicate', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(costData)
+            });
+
+            const responseBody = await response.json();
+
+            const duplicates = responseBody.result;
+
+            return {
+                date: new Date(row['Date']),
+                name: row['Description'],
+                cost: parseFloat(row['Amount']),
+                category: row['Category'],
+                duplicates,
+                payment: false
+            }
+        }));
+    } 
 }
 
 class ChaseWorkbookParser extends CsvWorkbookParser {
@@ -93,19 +99,43 @@ class ChaseWorkbookParser extends CsvWorkbookParser {
     async parse() {
         const text = await this.readFile(this.file)
         const csvData = d3.csvParse(text);
-        const data:ParserOutput = {}
-        csvData.forEach((row, index) => {
+        return Promise.all(csvData.map(async (row) => {
             if (row['Type'] === 'Payment') {
-                return;
+                return {
+                    date: new Date(row['Transaction Date']),
+                    name: row['Description'],
+                    cost: parseFloat(row['Amount']) * -1,
+                    category: row['Category'],
+                    payment: true
+                };
             }
-            data[index] = {
+
+            const costData = {
+                date: new Date(row['Transaction Date']).setHours(12),
+                cost: parseFloat(row['Amount']) * -1
+            }
+      
+            const response = await fetch('/api/purchase/duplicate', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(costData)
+            });
+
+            const responseBody = await response.json();
+
+            const duplicates = responseBody.result;
+
+            return {
                 date: new Date(row['Transaction Date']),
                 name: row['Description'],
                 cost: parseFloat(row['Amount']) * -1,
-                category: row['Category']
+                category: row['Category'],
+                duplicates,
+                payment: false
             }
-        });
-        return data;
+        }));
     } 
 }
 
@@ -117,19 +147,45 @@ class GeminiWorkbookParser extends CsvWorkbookParser {
     async parse() {
         const text = await this.readFile(this.file)
         const csvData = d3.csvParse(text);
-        const data:ParserOutput = {}
-        csvData.forEach((row, index) => {
-            if (row['Transaction Type'] === 'payment_transaction') {
-                return;
-            }
-            data[index] = {
-                date: new Date(row['Transaction Post Date']),
-                name: row['Description of Transaction'],
-                cost: parseFloat(row['Amount']),
-                category: ''
-            }
-        });
-        return data;
+        return Promise.all(
+            csvData.map(async (row) => {
+                if (row['Transaction Type'] === 'payment_transaction') {
+                    return {
+                        date: new Date(row['Transaction Post Date']),
+                        name: row['Description of Transaction'],
+                        cost: parseFloat(row['Amount']),
+                        category: '',
+                        payment: true
+                    };
+                }
+
+                const costData = {
+                    date: new Date(row['Transaction Post Date']).setHours(12),
+                    cost: parseFloat(row['Amount'])
+                }
+          
+                const response = await fetch('/api/purchase/duplicate', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(costData)
+                });
+    
+                const responseBody = await response.json();
+    
+                const duplicates = responseBody.result;
+
+                return {
+                    date: new Date(row['Transaction Post Date']),
+                    name: row['Description of Transaction'],
+                    cost: parseFloat(row['Amount']),
+                    category: '',
+                    duplicates,
+                    payment: false
+                }
+            })
+        );
     } 
 }
 
