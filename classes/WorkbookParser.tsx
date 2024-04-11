@@ -22,7 +22,7 @@ abstract class WorkbookParser {
 
     abstract readFile(file: File): Promise<any>
 
-    abstract parse(): Promise<Array<PurchaseOutput>>
+    abstract parse(): Promise<Array<any>>
 }
 
 abstract class CsvWorkbookParser extends WorkbookParser {
