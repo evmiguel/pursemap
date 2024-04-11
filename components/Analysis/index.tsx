@@ -19,6 +19,7 @@ import { FilterContext } from "@/app/filter-provider";
 import { filterPurchases } from "../Purchases";
 import { Purchase } from "../Purchases/columns";
 import { formatCurrency } from "@/util";
+import React from "react";
 
 type AnalysisProps = {
     purchases: Array<Purchase>
@@ -82,12 +83,14 @@ export default function Analysis({ purchases }: AnalysisProps) {
                         <div>
                           <ul>
                               {
-                                Object.entries(purchasesByCategory).map(([category, purchases]) => {
+                                React.Children.toArray(Object.entries(purchasesByCategory).map(([category, purchases]) => {
                                   const cost = purchases.reduce((a: number, b: Purchase) => { return b.cost + a }, 0);
                                   return <li className="flex justify-between" key={category}>
                                     <span className="inline-block">{category}</span>
                                     <span className="inline-block">{formatCurrency(cost)}</span>
                                     </li>
+                                })).sort((a: any, b: any) => { 
+                                  return parseFloat(b.props.children[1].props.children.slice(1)) - parseFloat(a.props.children[1].props.children.slice(1))
                                 })
                               }
                               <li className="flex justify-between border-t-2" key="total"><span className="inline-block font-bold">Total</span><span className="inline-block font-bold">
