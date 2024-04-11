@@ -18,7 +18,6 @@ import { useContext, useMemo } from "react";
 import { FilterContext } from "@/app/filter-provider";
 import { filterPurchases } from "../Purchases";
 import { Purchase } from "../Purchases/columns";
-import * as d3 from 'd3';
 import { formatCurrency } from "@/util";
 
 type AnalysisProps = {
@@ -35,8 +34,6 @@ const sumByKey = (arr: Array<any>, key: string, value: string) => {
     return res;
 }
 
-const MARGIN = { top: 30, right: 30, bottom: 30, left: 30 };
-const BAR_PADDING = 0.3;
 
 export default function Analysis({ purchases }: AnalysisProps) {
     const context = useContext(FilterContext);
@@ -45,67 +42,13 @@ export default function Analysis({ purchases }: AnalysisProps) {
 
     const itemsBought = sumByKey(filteredPurchases, 'name', 'cost').sort((a, b) => b.cost - a.cost);
 
-    const categoriesChartData = sumByKey(filteredPurchases.map(purchase => { 
-        return { name: purchase.category, value: purchase.cost}
-    }), 'name', 'value');
-
-    // bounds = area inside the graph axis = calculated by substracting the margins
-    const width = 700;
-    const height = 700;
-    const boundsWidth = width - MARGIN.right - MARGIN.left;
-    const boundsHeight = height - MARGIN.top - MARGIN.bottom;
-
-    // Y axis is for groups since the barplot is horizontal
-    const groups = categoriesChartData.sort((a, b) => b.value - a.value).map((d) => d.name);
-    
-    const xScale = useMemo(() => {
-      const [min, max] = d3.extent(categoriesChartData.map((d) => d.value));
-      return d3
-        .scaleLinear()
-        .domain([0, max || 10])
-        .range([0, boundsWidth]);
-    }, [categoriesChartData, width]);
-
-    const yScale = useMemo(() => {
-      return d3
-        .scaleBand()
-        .domain(groups)
-        .range([0, boundsHeight])
-        .padding(BAR_PADDING);
-    }, [categoriesChartData, height]);
-    // Build the shapes
-  const allShapes = categoriesChartData.map((d, i) => {
-    const y = yScale(d.name);
-    if (y === undefined) {
-      return null;
-    }
-
-    return (
-      <g key={i}>
-        <rect
-          x={xScale(0)}
-          y={yScale(d.name)}
-          width={xScale(d.value)}
-          height={yScale.bandwidth()}
-          opacity={0.7}
-          stroke="#3399ff"
-          fill="#3399ff"
-          fillOpacity={0.3}
-          strokeWidth={1}
-          rx={1}
-        />
-        <text
-          x={xScale(0) + 7}
-          y={y + yScale.bandwidth() / 2}
-          textAnchor="start"
-          alignmentBaseline="central"
-          fontSize={12}
-        >
-          {d.name}
-        </text>
-      </g>
-    );
-  });
+    const purchasesByCategory = filteredPurchases.reduce((a, b) => { 
+      if ( !(b.category as string in a) ) {
+        a[b.category as string] = [];
+      }
+      a[b.category as string].push(b)
+      return a
+    }, {} as Record<string, any>)
  
     return (
         <Dialog>
@@ -129,24 +72,34 @@ export default function Analysis({ purchases }: AnalysisProps) {
                               ))}
                               <li className="flex justify-between border-t-2" key="total"><span className="inline-block font-bold">Total</span><span className="inline-block font-bold">
                                 {
-                                  formatCurrency(itemsBought.reduce((a, b) => { return b.cost + a},0))
+                                  formatCurrency(itemsBought.reduce((a, b) => { return b.cost + a },0))
                                 }
                                 </span></li>
                           </ul>
                         </div>
                     </TabsContent>
                     <TabsContent value="categories">
-                    <div className="text-center max-h-96">
-                      <svg width={width} height={height}>
-                        <g
-                          width={boundsWidth}
-                          height={boundsHeight}
-                          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
-                        >
-                          {allShapes}
-                        </g>
-                      </svg>
-                    </div>
+                        <div>
+                          <ul>
+                              {
+                                Object.entries(purchasesByCategory).map(([category, purchases]) => {
+                                  const cost = purchases.reduce((a: number, b: Purchase) => { return b.cost + a }, 0);
+                                  return <li className="flex justify-between" key={category}>
+                                    <span className="inline-block">{category}</span>
+                                    <span className="inline-block">{formatCurrency(cost)}</span>
+                                    </li>
+                                })
+                              }
+                              <li className="flex justify-between border-t-2" key="total"><span className="inline-block font-bold">Total</span><span className="inline-block font-bold">
+                                {
+                                  formatCurrency(Object.values(purchasesByCategory).reduce((a, purchases) => {
+                                    const rowCost = purchases.reduce((a: number, b: Purchase) => { return b.cost + a }, 0);
+                                    return rowCost + a;
+                                  }, 0))
+                                }
+                                </span></li>
+                          </ul>
+                        </div>
                     </TabsContent>
                 </Tabs>
             </DialogContent>
